@@ -7,7 +7,7 @@ CheckDriverpackages:
 Dieses Script liest die Treiberpakete einer ConfigMgr Site aus und prüft die konfigurierten Sourceverzeichnisse. Existieren die Verzeichnisse und enthalten die Verzeichnisse Dateien. Das Script ist hilfreich bei Aufräumaktionen in ConfigMgr. Auch sind so schnell Treiberpakete identifiziert bei denen Sourceverzeichnisse gelöscht wurden oder deren Verzeichnisse leer sind. Leere Verzeichnisse bei Treiberpaketen führen u.U. zu Fehlern.
 
 *************************
-Compare-AD-CM-Client.ps1:
+Compare-AD-CM-Clients.ps1:
 Existiert ein AD-Computerobjekt zum ConfigMgr‑Client?
 Ist dieses AD‑Objekt deaktiviert? (optional ignorierbar)
 Optional: AD‑Suchbasis (OU) einstellbar
