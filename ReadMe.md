@@ -1,4 +1,4 @@
-# Scripte-Sly
+# Scripts-Sly
 
 PowerShell scripts for Microsoft Configuration Manager (ConfigMgr/SCCM) administrative tasks.
 
