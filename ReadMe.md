@@ -219,7 +219,7 @@ The account running these scripts must have:
 
 1. **Clone the repository**:
 ```powershell
-git clone https://github.com/raandree/Scripte-Sly.git
+git clone https://github.com/sboehle/Scripts-Sly.git
 cd Scripte-Sly
 ```
 
@@ -344,8 +344,8 @@ The scripts are intended for administrative use in Configuration Manager environ
 ## Support
 
 For issues, questions, or contributions:
-- **GitHub Issues**: [Create an issue](https://github.com/raandree/Scripte-Sly/issues)
-- **Pull Requests**: [Submit improvements](https://github.com/raandree/Scripte-Sly/pulls)
+- **GitHub Issues**: [Create an issue](https://github.com/sboehle/Scripts-Sly/issues)
+- **Pull Requests**: [Submit improvements](https://github.com/sboehle/Scripts-Sly/pulls)
 
 ## Changelog
 
@@ -364,5 +364,5 @@ For issues, questions, or contributions:
 ---
 
 **Author**: Configuration Manager Administrators  
-**Repository**: [https://github.com/raandree/Scripte-Sly](https://github.com/raandree/Scripte-Sly)  
+**Repository**: [https://github.com/sboehle/Scripts-Sly](https://github.com/sboehle/Scripts-Sly)  
 **Last Updated**: July 02, 2026
