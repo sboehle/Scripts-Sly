@@ -31,7 +31,7 @@
 .EXAMPLE
     .\Add-CMCollectionRegistryRule.ps1
 
-    Adds a rule to collection PCP-Gerate-MD1031 that targets AvailableUpdates = 0.
+    Adds a rule to collection SampleCollection that targets AvailableUpdates = 0.
 
 .OUTPUTS
     System.Management.Automation.PSCustomObject
@@ -42,7 +42,7 @@
 param(
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string]$CollectionName = 'PCP-Gerate-MD1031',
+    [string]$CollectionName = 'SampleCollection',
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]

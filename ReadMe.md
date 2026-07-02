@@ -243,7 +243,7 @@ Adds a query membership rule to an existing ConfigMgr device collection based on
 - Supports `-WhatIf` and `-Confirm` via `SupportsShouldProcess`
 
 **Parameters**:
-- `CollectionName` - Existing device collection name (default: `PCP-Gerate-MD1031`)
+- `CollectionName` - Existing device collection name (default: `SampleCollection`)
 - `RegistryKeyPath` - Registry path context used in output/rule metadata
 - `InventoryClassName` - Inventory class to query (default: `SMS_G_System_SecureBoot_Main_1_0`)
 - `InventoryPropertyName` - Property to compare (default: `AvailableUpdates`)
@@ -254,7 +254,7 @@ Adds a query membership rule to an existing ConfigMgr device collection based on
 **Example**:
 ```powershell
 .\Add-CMCollectionRegistryRule.ps1 `
-  -CollectionName 'PCP-Geräte-MD1031' `
+  -CollectionName 'SampleCollection' `
   -RegistryKeyPath 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecureBoot\AvailableUpdates' `
   -InventoryClassName 'SMS_G_System_SecureBoot_Main_1_0' `
   -InventoryPropertyName 'AvailableUpdates' `
@@ -416,7 +416,7 @@ Add a query rule to include clients where `AvailableUpdates = 0`:
 
 ```powershell
 .\Add-CMCollectionRegistryRule.ps1 `
-  -CollectionName 'PCP-Geräte-MD1031' `
+  -CollectionName 'SampleCollection' `
   -RegistryKeyPath 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecureBoot\AvailableUpdates' `
   -InventoryClassName 'SMS_G_System_SecureBoot_Main_1_0' `
   -InventoryPropertyName 'AvailableUpdates' `
