@@ -15,6 +15,7 @@ This repository contains PowerShell scripts developed during administrative acti
   - [CheckDriverPackages.ps1](#checkdriverpackagesps1)
   - [Compare-AD-CM-Clients.ps1](#compare-ad-cm-clientsps1)
   - [New-CMCollection.ps1](#new-cmcollectionps1)
+  - [Remove-CMCollection.ps1](#remove-cmcollectionps1)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage Examples](#usage-examples)
@@ -190,6 +191,41 @@ Creates a Configuration Manager collection if it does not already exist.
 
 ---
 
+### Remove-CMCollection.ps1
+
+Removes a Configuration Manager collection if it exists.
+
+**Purpose**: Provides a safe and idempotent way to remove device or user collections in ConfigMgr.
+
+**Features**:
+- Imports the ConfigurationManager module automatically
+- Auto-detects site code when not provided
+- Supports device, user, or automatic collection type detection
+- Returns `NotFound` when the collection does not exist
+- Supports `-WhatIf` and `-Confirm` via `SupportsShouldProcess`
+- Handles ConfigMgr module version differences (with or without `-Fast` support)
+
+**Parameters**:
+- `CollectionName` - Name of the collection to remove (default: `TESTtest`)
+- `CollectionType` - `Auto`, `Device`, or `User` (default: `Auto`)
+- `SiteCode` - Optional site code (for example: `P01`)
+
+**Example**:
+```powershell
+.\Remove-CMCollection.ps1 -CollectionName 'TESTtest'
+```
+
+**Output**:
+- Object with: `CollectionName`, `CollectionType`, `SiteCode`, `Action`, `CollectionId`
+- `Action` is either `Removed` or `NotFound`
+
+**Requirements**:
+- PowerShell 5.1 or higher
+- ConfigMgr Console installed (ConfigurationManager PowerShell module)
+- Permissions to delete collections in ConfigMgr
+
+---
+
 ## Requirements
 
 ### Common Requirements
@@ -207,6 +243,7 @@ All scripts require:
 | CheckDriverPackages.ps1 | Required | Yes | No | Source paths |
 | Compare-AD-CM-Clients.ps1 | No | Yes (WMI) | Optional | AD Domain |
 | New-CMCollection.ps1 | Required | Yes | No | Access to ConfigMgr site server |
+| Remove-CMCollection.ps1 | Required | Yes | No | Access to ConfigMgr site server |
 
 ### Permissions
 
@@ -311,6 +348,20 @@ Create a new device collection, then run the script again without creating dupli
 .\New-CMCollection.ps1 -CollectionName 'TESTtest'
 ```
 
+### Scenario 6: Remove Collection Safely
+
+Remove a collection only if it exists:
+
+```powershell
+.\Remove-CMCollection.ps1 -CollectionName 'TESTtest'
+```
+
+Run with preview mode first:
+
+```powershell
+.\Remove-CMCollection.ps1 -CollectionName 'TESTtest' -WhatIf
+```
+
 ## Contributing
 
 Contributions are welcome! Please follow these guidelines:
@@ -351,6 +402,7 @@ For issues, questions, or contributions:
 
 ### 2026-07-02
 - Added `New-CMCollection.ps1` for idempotent ConfigMgr collection creation
+- Added `Remove-CMCollection.ps1` for safe, idempotent ConfigMgr collection deletion
 - Added README documentation, examples, and requirements entry for the new script
 
 ### 2026-01-20
