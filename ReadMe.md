@@ -16,6 +16,7 @@ This repository contains PowerShell scripts developed during administrative acti
   - [Compare-AD-CM-Clients.ps1](#compare-ad-cm-clientsps1)
   - [New-CMCollection.ps1](#new-cmcollectionps1)
   - [Remove-CMCollection.ps1](#remove-cmcollectionps1)
+  - [Add-CMCollectionRegistryRule.ps1](#add-cmcollectionregistryruleps1)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage Examples](#usage-examples)
@@ -226,6 +227,52 @@ Removes a Configuration Manager collection if it exists.
 
 ---
 
+### Add-CMCollectionRegistryRule.ps1
+
+Adds a query membership rule to an existing ConfigMgr device collection based on an inventory-backed registry value.
+
+**Purpose**: Adds and maintains a query rule that includes clients with a specific registry-derived value (idempotent behavior).
+
+**Features**:
+- Imports the ConfigurationManager module automatically
+- Auto-detects site code when not provided
+- Validates target inventory class and property before adding the rule
+- Supports numeric and string comparison values
+- Avoids duplicate rules by query normalization
+- Returns `AlreadyExists` when the same logical query is already present
+- Supports `-WhatIf` and `-Confirm` via `SupportsShouldProcess`
+
+**Parameters**:
+- `CollectionName` - Existing device collection name (default: `PCP-Gerate-MD1031`)
+- `RegistryKeyPath` - Registry path context used in output/rule metadata
+- `InventoryClassName` - Inventory class to query (default: `SMS_G_System_SecureBoot_Main_1_0`)
+- `InventoryPropertyName` - Property to compare (default: `AvailableUpdates`)
+- `DesiredValue` - Expected value (default: `0`)
+- `RuleName` - Optional explicit rule name
+- `SiteCode` - Optional site code (for example: `P01`)
+
+**Example**:
+```powershell
+.\Add-CMCollectionRegistryRule.ps1 `
+  -CollectionName 'PCP-Geräte-MD1031' `
+  -RegistryKeyPath 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecureBoot\AvailableUpdates' `
+  -InventoryClassName 'SMS_G_System_SecureBoot_Main_1_0' `
+  -InventoryPropertyName 'AvailableUpdates' `
+  -DesiredValue '0' `
+  -RuleName 'RegValue: AvailableUpdates = 0'
+```
+
+**Output**:
+- Object with: `CollectionName`, `RuleName`, `RegistryKeyPath`, `InventoryClassName`, `InventoryPropertyName`, `DesiredValue`, `SiteCode`, `Action`
+- `Action` is either `Added` or `AlreadyExists`
+
+**Requirements**:
+- PowerShell 5.1 or higher
+- ConfigMgr Console installed (ConfigurationManager PowerShell module)
+- Existing device collection and required hardware inventory class in ConfigMgr
+
+---
+
 ## Requirements
 
 ### Common Requirements
@@ -244,6 +291,7 @@ All scripts require:
 | Compare-AD-CM-Clients.ps1 | No | Yes (WMI) | Optional | AD Domain |
 | New-CMCollection.ps1 | Required | Yes | No | Access to ConfigMgr site server |
 | Remove-CMCollection.ps1 | Required | Yes | No | Access to ConfigMgr site server |
+| Add-CMCollectionRegistryRule.ps1 | Required | Yes | No | Access to ConfigMgr site server |
 
 ### Permissions
 
@@ -362,6 +410,22 @@ Run with preview mode first:
 .\Remove-CMCollection.ps1 -CollectionName 'TESTtest' -WhatIf
 ```
 
+### Scenario 7: Add Registry-Based Query Rule
+
+Add a query rule to include clients where `AvailableUpdates = 0`:
+
+```powershell
+.\Add-CMCollectionRegistryRule.ps1 `
+  -CollectionName 'PCP-Geräte-MD1031' `
+  -RegistryKeyPath 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecureBoot\AvailableUpdates' `
+  -InventoryClassName 'SMS_G_System_SecureBoot_Main_1_0' `
+  -InventoryPropertyName 'AvailableUpdates' `
+  -DesiredValue '0' `
+  -RuleName 'RegValue: AvailableUpdates = 0'
+```
+
+Run again to verify idempotency (`Action = AlreadyExists`).
+
 ## Contributing
 
 Contributions are welcome! Please follow these guidelines:
@@ -403,7 +467,8 @@ For issues, questions, or contributions:
 ### 2026-07-02
 - Added `New-CMCollection.ps1` for idempotent ConfigMgr collection creation
 - Added `Remove-CMCollection.ps1` for safe, idempotent ConfigMgr collection deletion
-- Added README documentation, examples, and requirements entry for the new script
+- Added `Add-CMCollectionRegistryRule.ps1` for idempotent registry-based collection query rules
+- Added README documentation, examples, and requirements entries for new scripts
 
 ### 2026-01-20
 - **Enhanced all scripts** with PowerShell best practices
