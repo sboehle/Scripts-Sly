@@ -14,6 +14,7 @@ This repository contains PowerShell scripts developed during administrative acti
   - [CheckAppSourcePaths.ps1](#checkappsourcepathsps1)
   - [CheckDriverPackages.ps1](#checkdriverpackagesps1)
   - [Compare-AD-CM-Clients.ps1](#compare-ad-cm-clientsps1)
+  - [New-CMCollection.ps1](#new-cmcollectionps1)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage Examples](#usage-examples)
@@ -152,6 +153,43 @@ Compares active ConfigMgr clients with Active Directory computer objects.
 
 ---
 
+### New-CMCollection.ps1
+
+Creates a Configuration Manager collection if it does not already exist.
+
+**Purpose**: Provides an idempotent way to create device or user collections in ConfigMgr and avoid duplicate objects.
+
+**Features**:
+- Imports the ConfigurationManager module automatically
+- Auto-detects site code when not provided
+- Supports both device and user collections
+- Uses default limiting collections (`All Systems` for device, `All Users` for user)
+- Detects existing collection and returns `AlreadyExists` instead of creating duplicates
+- Supports `-WhatIf` and `-Confirm` via `SupportsShouldProcess`
+- Handles ConfigMgr module version differences (with or without `-Fast` support)
+
+**Parameters**:
+- `CollectionName` - Name of the collection to create (default: `TESTtest`)
+- `CollectionType` - `Device` or `User` (default: `Device`)
+- `SiteCode` - Optional site code (for example: `P01`)
+- `LimitingCollectionName` - Optional limiting collection name
+
+**Example**:
+```powershell
+.\New-CMCollection.ps1 -CollectionName 'TESTtest'
+```
+
+**Output**:
+- Object with: `CollectionName`, `CollectionType`, `LimitingCollection`, `SiteCode`, `Action`, `CollectionId`
+- `Action` is either `Created` or `AlreadyExists`
+
+**Requirements**:
+- PowerShell 5.1 or higher
+- ConfigMgr Console installed (ConfigurationManager PowerShell module)
+- Permissions to create collections in ConfigMgr
+
+---
+
 ## Requirements
 
 ### Common Requirements
@@ -168,6 +206,7 @@ All scripts require:
 | CheckAppSourcePaths.ps1 | Optional | Yes (WMI/CIM) | No | Source paths |
 | CheckDriverPackages.ps1 | Required | Yes | No | Source paths |
 | Compare-AD-CM-Clients.ps1 | No | Yes (WMI) | Optional | AD Domain |
+| New-CMCollection.ps1 | Required | Yes | No | Access to ConfigMgr site server |
 
 ### Permissions
 
@@ -260,6 +299,18 @@ Compare clients in specific OU across different domains:
     -OutputCsv '.\Europe_Clients.csv'
 ```
 
+### Scenario 5: Create Collection Idempotently
+
+Create a new device collection, then run the script again without creating duplicates:
+
+```powershell
+# First run creates the collection
+.\New-CMCollection.ps1 -CollectionName 'TESTtest'
+
+# Second run returns AlreadyExists
+.\New-CMCollection.ps1 -CollectionName 'TESTtest'
+```
+
 ## Contributing
 
 Contributions are welcome! Please follow these guidelines:
@@ -298,6 +349,10 @@ For issues, questions, or contributions:
 
 ## Changelog
 
+### 2026-07-02
+- Added `New-CMCollection.ps1` for idempotent ConfigMgr collection creation
+- Added README documentation, examples, and requirements entry for the new script
+
 ### 2026-01-20
 - **Enhanced all scripts** with PowerShell best practices
 - Added comprehensive comment-based help to all scripts
@@ -310,4 +365,4 @@ For issues, questions, or contributions:
 
 **Author**: Configuration Manager Administrators  
 **Repository**: [https://github.com/raandree/Scripte-Sly](https://github.com/raandree/Scripte-Sly)  
-**Last Updated**: January 20, 2026
+**Last Updated**: July 02, 2026
