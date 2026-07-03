@@ -17,6 +17,7 @@ This repository contains PowerShell scripts developed during administrative acti
   - [New-CMCollection.ps1](#new-cmcollectionps1)
   - [Remove-CMCollection.ps1](#remove-cmcollectionps1)
   - [Add-CMCollectionRegistryRule.ps1](#add-cmcollectionregistryruleps1)
+  - [Check-CMSecurityPosture.ps1](#check-cmsecuritypostureps1)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage Examples](#usage-examples)
@@ -273,6 +274,42 @@ Adds a query membership rule to an existing ConfigMgr device collection based on
 
 ---
 
+### Check-CMSecurityPosture.ps1
+
+Checks common high-impact ConfigMgr security issues and returns prioritized hardening recommendations.
+
+**Purpose**: Provides a quick security posture assessment for ConfigMgr site servers with actionable hardening guidance.
+
+**Features**:
+- Assesses WinRM listener posture (HTTP/HTTPS)
+- Assesses SMB hardening posture (SMB1 and signing)
+- Checks TLS baseline indicators for legacy protocol hardening
+- Checks SQL transport encryption and authentication mode
+- Reviews SQL `sysadmin` membership against an allow-list
+- Checks high-privilege service account usage for core SQL/ConfigMgr services
+- Returns structured findings and deduplicated recommendations
+
+**Parameters**:
+- `SiteCode` - Optional site code (auto-detected if omitted)
+- `SqlServer` - SQL Server target (default: `localhost`)
+- `WarningSysadminAllowList` - Allowed SQL `sysadmin` login list for warning suppression
+
+**Example**:
+```powershell
+.\Check-CMSecurityPosture.ps1 -SiteCode 'PRI' -SqlServer 'SNSRV002'
+```
+
+**Output**:
+- Object with: `ComputerName`, `SiteCode`, `AssessedAt`, `SqlServer`, `SqlConnectivity`, `SqlForceEncryption`, `SqlLoginMode`, `SysadminMembers`, `FindingCount`, `Findings`, `HardeningRecommendations`
+
+**Requirements**:
+- PowerShell 5.1 or higher
+- ConfigMgr Console installed (ConfigurationManager PowerShell module)
+- SQL command-line tool (`sqlcmd.exe`) for SQL-specific checks
+- Read access to local security/registry settings and SQL metadata
+
+---
+
 ## Requirements
 
 ### Common Requirements
@@ -292,6 +329,7 @@ All scripts require:
 | New-CMCollection.ps1 | Required | Yes | No | Access to ConfigMgr site server |
 | Remove-CMCollection.ps1 | Required | Yes | No | Access to ConfigMgr site server |
 | Add-CMCollectionRegistryRule.ps1 | Required | Yes | No | Access to ConfigMgr site server |
+| Check-CMSecurityPosture.ps1 | Required | Yes | No | Access to ConfigMgr site server |
 
 ### Permissions
 
@@ -426,6 +464,23 @@ Add a query rule to include clients where `AvailableUpdates = 0`:
 
 Run again to verify idempotency (`Action = AlreadyExists`).
 
+### Scenario 8: Security Posture and Hardening Recommendations
+
+Run a focused ConfigMgr security assessment:
+
+```powershell
+.\Check-CMSecurityPosture.ps1 -SiteCode 'PRI' -SqlServer 'SNSRV002'
+```
+
+Review high-priority findings:
+
+```powershell
+$result = .\Check-CMSecurityPosture.ps1 -SiteCode 'PRI' -SqlServer 'SNSRV002'
+$result.Findings |
+  Where-Object { $_.Severity -eq 'High' } |
+  Select-Object Severity, Category, Issue, Recommendation
+```
+
 ## Contributing
 
 Contributions are welcome! Please follow these guidelines:
@@ -464,6 +519,10 @@ For issues, questions, or contributions:
 
 ## Changelog
 
+### 2026-07-03
+- Added `Check-CMSecurityPosture.ps1` for ConfigMgr-focused security posture checks and hardening recommendations
+- Added README documentation, requirements entry, and usage examples for the new security script
+
 ### 2026-07-02
 - Added `New-CMCollection.ps1` for idempotent ConfigMgr collection creation
 - Added `Remove-CMCollection.ps1` for safe, idempotent ConfigMgr collection deletion
@@ -482,4 +541,4 @@ For issues, questions, or contributions:
 
 **Author**: Configuration Manager Administrators  
 **Repository**: [https://github.com/sboehle/Scripts-Sly](https://github.com/sboehle/Scripts-Sly)  
-**Last Updated**: July 02, 2026
+**Last Updated**: July 03, 2026
