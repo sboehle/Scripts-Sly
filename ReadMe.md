@@ -18,6 +18,7 @@ This repository contains PowerShell scripts developed during administrative acti
   - [Remove-CMCollection.ps1](#remove-cmcollectionps1)
   - [Add-CMCollectionRegistryRule.ps1](#add-cmcollectionregistryruleps1)
   - [Check-CMSecurityPosture.ps1](#check-cmsecuritypostureps1)
+  - [Get-CMDailyMonitoringReport.ps1](#get-cmdailymonitoringreportps1)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage Examples](#usage-examples)
@@ -310,6 +311,43 @@ Checks common high-impact ConfigMgr security issues and returns prioritized hard
 
 ---
 
+### Get-CMDailyMonitoringReport.ps1
+
+Generates a daily ConfigMgr monitoring report with prioritized findings and hardening actions.
+
+**Purpose**: Automates morning monitoring tasks for a ConfigMgr administrator by checking site, component, system, SQL, storage, and backlog health.
+
+**Features**:
+- Checks site status, component status, and site system status
+- Checks SQL connectivity, SQL encryption, SQL login mode, and sysadmin membership
+- Checks database backup recency and disk free space
+- Checks inbox backlog hotspots and optional role health signals
+- Returns findings sorted by severity and priority with matching recommendations
+- Includes a short daily task list in the output for quick review
+
+**Parameters**:
+- `SiteCode` - Optional site code (auto-detected if omitted)
+- `SqlServer` - SQL Server host to test (default: `localhost`)
+- `InboxBacklogThreshold` - Inbox file count threshold before a backlog is reported
+- `MinimumFreePercent` - Minimum free disk percentage before a storage warning is reported
+- `TopBacklogItems` - Maximum number of inbox backlogs returned
+
+**Example**:
+```powershell
+.\Get-CMDailyMonitoringReport.ps1 -SiteCode 'PRI' -SqlServer 'SNSRV002'
+```
+
+**Output**:
+- Object with: `ComputerName`, `SiteCode`, `SqlServer`, `GeneratedAt`, `Summary`, `DailyTasks`, `Findings`, `HardeningRecommendations`, `SysadminMembers`, `DiskSummary`, `InboxBacklog`
+
+**Requirements**:
+- PowerShell 5.1 or higher
+- ConfigMgr Console installed (ConfigurationManager PowerShell module)
+- SQL command-line tool (`sqlcmd.exe`) available on the site server
+- Read access to ConfigMgr site data and SQL metadata
+
+---
+
 ## Requirements
 
 ### Common Requirements
@@ -330,6 +368,7 @@ All scripts require:
 | Remove-CMCollection.ps1 | Required | Yes | No | Access to ConfigMgr site server |
 | Add-CMCollectionRegistryRule.ps1 | Required | Yes | No | Access to ConfigMgr site server |
 | Check-CMSecurityPosture.ps1 | Required | Yes | No | Access to ConfigMgr site server |
+| Get-CMDailyMonitoringReport.ps1 | Required | Yes | No | Access to ConfigMgr site server |
 
 ### Permissions
 
@@ -481,6 +520,23 @@ $result.Findings |
   Select-Object Severity, Category, Issue, Recommendation
 ```
 
+### Scenario 9: Daily Morning Monitoring
+
+Run the daily monitoring report and review the highest priority findings:
+
+```powershell
+.\Get-CMDailyMonitoringReport.ps1 -SiteCode 'PRI' -SqlServer 'SNSRV002'
+```
+
+Focus on the highest severity items first:
+
+```powershell
+$report = .\Get-CMDailyMonitoringReport.ps1 -SiteCode 'PRI' -SqlServer 'SNSRV002'
+$report.Findings |
+  Select-Object Severity, Category, Check, Finding, Priority |
+  Format-Table -AutoSize
+```
+
 ## Contributing
 
 Contributions are welcome! Please follow these guidelines:
@@ -521,7 +577,8 @@ For issues, questions, or contributions:
 
 ### 2026-07-03
 - Added `Check-CMSecurityPosture.ps1` for ConfigMgr-focused security posture checks and hardening recommendations
-- Added README documentation, requirements entry, and usage examples for the new security script
+- Added `Get-CMDailyMonitoringReport.ps1` for daily ConfigMgr monitoring and prioritized task reporting
+- Added README documentation, requirements entry, and usage examples for the new monitoring script
 
 ### 2026-07-02
 - Added `New-CMCollection.ps1` for idempotent ConfigMgr collection creation
